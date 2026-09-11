@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, ShieldAlert, Send, UploadCloud, AlertCircle } from 'lucide-react';
 import type { ItrFormData } from '../../types';
 import { isValidIndianMobile, isValidEmail, isValidPan } from '../../utils/validation';
+import { sanitizeText, checkRateLimit, validateSecureFile } from '../../utils/security';
 
 interface ItrModalProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [botHoneypot, setBotHoneypot] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -46,16 +48,9 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Security validation
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-    if (!allowedTypes.includes(file.type)) {
-      setFileError('Only PDF, JPG, JPEG, or PNG files are permitted.');
-      setSelectedFile(null);
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      setFileError('File size exceeds the 10MB limit.');
+    const fileCheck = validateSecureFile(file);
+    if (!fileCheck.valid) {
+      setFileError(fileCheck.error || 'Invalid file format');
       setSelectedFile(null);
       return;
     }
@@ -66,12 +61,29 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Anti-bot honeypot check: Silent drop if bot filled hidden field
+    if (botHoneypot) return;
+
+    // Anti-flooding / rate-limit check
+    const rateCheck = checkRateLimit('itr_request', 3, 60);
+    if (!rateCheck.allowed) {
+      setErrors({ form: `Rate limit reached: Please wait ${rateCheck.waitSeconds}s before submitting again.` });
+      return;
+    }
+
     const newErrors: Record<string, string> = {};
 
-    if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
-    if (!isValidIndianMobile(formData.mobile)) newErrors.mobile = 'Enter a valid 10-digit mobile number';
-    if (formData.email && !isValidEmail(formData.email)) newErrors.email = 'Enter a valid email address';
-    if (formData.panNumber && !isValidPan(formData.panNumber)) newErrors.panNumber = 'Enter a valid PAN (e.g. ABCDE1234F)';
+    const cleanFullName = sanitizeText(formData.fullName);
+    const cleanMobile = formData.mobile.replace(/\D/g, '');
+    const cleanEmail = sanitizeText(formData.email);
+    const cleanPan = sanitizeText(formData.panNumber).toUpperCase();
+    const cleanMessage = sanitizeText(formData.message);
+
+    if (!cleanFullName) newErrors.fullName = 'Full Name is required';
+    if (!isValidIndianMobile(cleanMobile)) newErrors.mobile = 'Enter a valid 10-digit mobile number';
+    if (cleanEmail && !isValidEmail(cleanEmail)) newErrors.email = 'Enter a valid email address';
+    if (cleanPan && !isValidPan(cleanPan)) newErrors.panNumber = 'Enter a valid PAN (e.g. ABCDE1234F)';
     if (!formData.consent) newErrors.consent = 'You must agree to the enquiry declaration';
 
     if (Object.keys(newErrors).length > 0) {
@@ -85,11 +97,22 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
       setIsSubmitting(false);
       const refId = 'ITR-' + Math.floor(100000 + Math.random() * 900000);
       onSubmitSuccess({
-        name: formData.fullName,
-        phone: formData.mobile,
+        name: cleanFullName,
+        phone: cleanMobile,
         service: 'Income Tax Return (ITR)',
         refId,
-        details: { ...formData, fileName: selectedFile?.name }
+        details: {
+          fullName: cleanFullName,
+          mobile: cleanMobile,
+          email: cleanEmail,
+          panNumber: cleanPan,
+          assessmentYear: formData.assessmentYear,
+          employmentType: formData.employmentType,
+          incomeType: formData.incomeType,
+          previousItrFiled: formData.previousItrFiled,
+          message: cleanMessage,
+          fileName: selectedFile?.name
+        }
       });
       onClose();
     }, 600);
@@ -124,6 +147,24 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          
+          {/* Invisible Anti-bot Honeypot */}
+          <div style={{ display: 'none' }} aria-hidden="true">
+            <input
+              type="text"
+              name="company_hp_verify"
+              value={botHoneypot}
+              onChange={e => setBotHoneypot(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
+
+          {errors.form && (
+            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 text-xs font-semibold border border-red-200 dark:border-red-800">
+              {errors.form}
+            </div>
+          )}
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Full Name */}

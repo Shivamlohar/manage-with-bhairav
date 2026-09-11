@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, ShieldAlert, Send } from 'lucide-react';
 import type { GstFormData } from '../../types';
 import { isValidIndianMobile, isValidEmail, isValidGstin } from '../../utils/validation';
+import { sanitizeText, checkRateLimit } from '../../utils/security';
 
 interface GstModalProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
     consent: false,
   });
 
+  const [botHoneypot, setBotHoneypot] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -31,14 +33,30 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (botHoneypot) return;
+
+    const rateCheck = checkRateLimit('gst_request', 3, 60);
+    if (!rateCheck.allowed) {
+      setErrors({ form: `Rate limit: Please wait ${rateCheck.waitSeconds}s before submitting again.` });
+      return;
+    }
+
+    const cleanFullName = sanitizeText(formData.fullName);
+    const cleanMobile = formData.mobile.replace(/\D/g, '');
+    const cleanEmail = sanitizeText(formData.email);
+    const cleanBusinessName = sanitizeText(formData.businessName);
+    const cleanCity = sanitizeText(formData.city);
+    const cleanGstin = sanitizeText(formData.existingGstNumber || '').toUpperCase();
+    const cleanMessage = sanitizeText(formData.message);
+
     const newErrors: Record<string, string> = {};
 
-    if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
-    if (!isValidIndianMobile(formData.mobile)) newErrors.mobile = 'Enter a valid 10-digit mobile number';
-    if (formData.email && !isValidEmail(formData.email)) newErrors.email = 'Enter a valid email address';
-    if (!formData.businessName.trim()) newErrors.businessName = 'Business Name is required';
-    if (!formData.city.trim()) newErrors.city = 'City / State is required';
-    if (formData.existingGstNumber && !isValidGstin(formData.existingGstNumber)) {
+    if (!cleanFullName) newErrors.fullName = 'Full Name is required';
+    if (!isValidIndianMobile(cleanMobile)) newErrors.mobile = 'Enter a valid 10-digit mobile number';
+    if (cleanEmail && !isValidEmail(cleanEmail)) newErrors.email = 'Enter a valid email address';
+    if (!cleanBusinessName) newErrors.businessName = 'Business Name is required';
+    if (!cleanCity) newErrors.city = 'City / State is required';
+    if (cleanGstin && !isValidGstin(cleanGstin)) {
       newErrors.existingGstNumber = 'Enter a valid 15-character GSTIN (e.g. 08AAAAA0000A1Z5)';
     }
     if (!formData.consent) newErrors.consent = 'Please confirm this request';
@@ -54,22 +72,31 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
       setIsSubmitting(false);
       const refId = 'GST-' + Math.floor(100000 + Math.random() * 900000);
       onSubmitSuccess({
-        name: formData.fullName,
-        phone: formData.mobile,
+        name: cleanFullName,
+        phone: cleanMobile,
         service: 'GST Services',
         refId,
-        details: formData
+        details: {
+          ...formData,
+          fullName: cleanFullName,
+          mobile: cleanMobile,
+          email: cleanEmail,
+          businessName: cleanBusinessName,
+          city: cleanCity,
+          existingGstNumber: cleanGstin,
+          message: cleanMessage,
+        }
       });
       onClose();
     }, 600);
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full border border-slate-200 overflow-hidden my-8 transform transition-all">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full border border-slate-200 dark:border-slate-800 overflow-hidden my-8 transform transition-all text-left">
         
         {/* Modal Header */}
-        <div className="bg-[#0B1B36] text-white px-6 py-5 flex items-center justify-between border-b border-brand-navy-700">
+        <div className="bg-[#0B1B36] dark:bg-[#071124] text-white px-6 py-5 flex items-center justify-between border-b border-brand-navy-700 dark:border-slate-800">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-amber-400">GST Services</span>
             <h3 className="font-display text-xl font-bold text-white mt-0.5">
@@ -86,18 +113,36 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
         </div>
 
         {/* Security Alert Banner */}
-        <div className="bg-amber-50 border-b border-amber-200/80 px-6 py-2.5 flex items-center gap-2.5 text-xs text-amber-900 font-medium">
-          <ShieldAlert className="w-4 h-4 text-amber-600 flex-shrink-0" />
+        <div className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200/80 dark:border-amber-800/60 px-6 py-2.5 flex items-center gap-2.5 text-xs text-amber-900 dark:text-amber-200 font-medium">
+          <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
           <span>Security Notice: Manage With Bhairav will never ask for your bank OTP, net banking password, or debit card PIN.</span>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-left">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
           
+          {/* Invisible Anti-bot Honeypot */}
+          <div style={{ display: 'none' }} aria-hidden="true">
+            <input
+              type="text"
+              name="tax_hp_verification"
+              value={botHoneypot}
+              onChange={e => setBotHoneypot(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
+
+          {errors.form && (
+            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 text-xs font-semibold border border-red-200 dark:border-red-800">
+              {errors.form}
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Full Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Full Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -105,8 +150,8 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
                 value={formData.fullName}
                 onChange={e => setFormData({ ...formData, fullName: e.target.value })}
                 placeholder="e.g. Suresh Patel"
-                className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors ${
-                  errors.fullName ? 'border-red-400 bg-red-50/20' : 'border-slate-300'
+                className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-slate-800 dark:text-white transition-colors ${
+                  errors.fullName ? 'border-red-400 bg-red-50/20' : 'border-slate-300 dark:border-slate-700'
                 }`}
               />
               {errors.fullName && <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>}
@@ -114,19 +159,19 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
 
             {/* Mobile Number */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Mobile Number <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-2.5 text-xs font-bold text-slate-500">+91</span>
+                <span className="absolute left-3 top-2.5 text-xs font-bold text-slate-500 dark:text-slate-400">+91</span>
                 <input
                   type="tel"
                   maxLength={10}
                   value={formData.mobile}
                   onChange={e => setFormData({ ...formData, mobile: e.target.value.replace(/\D/g, '') })}
                   placeholder="9876543210"
-                  className={`w-full pl-12 pr-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors ${
-                    errors.mobile ? 'border-red-400 bg-red-50/20' : 'border-slate-300'
+                  className={`w-full pl-12 pr-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-slate-800 dark:text-white transition-colors ${
+                    errors.mobile ? 'border-red-400 bg-red-50/20' : 'border-slate-300 dark:border-slate-700'
                   }`}
                 />
               </div>
@@ -137,7 +182,7 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Email */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Email Address (Optional)
               </label>
               <input
@@ -145,23 +190,23 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
                 value={formData.email}
                 onChange={e => setFormData({ ...formData, email: e.target.value })}
                 placeholder="business@example.com"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
               {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
             </div>
 
             {/* Business Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Business / Enterprise Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={formData.businessName}
                 onChange={e => setFormData({ ...formData, businessName: e.target.value })}
-                placeholder="e.g. Patel Traders / Shri Ganesh Enterprises"
-                className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors ${
-                  errors.businessName ? 'border-red-400 bg-red-50/20' : 'border-slate-300'
+                placeholder="e.g. Patel Traders"
+                className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-slate-800 dark:text-white transition-colors ${
+                  errors.businessName ? 'border-red-400 bg-red-50/20' : 'border-slate-300 dark:border-slate-700'
                 }`}
               />
               {errors.businessName && <p className="text-xs text-red-500 mt-1">{errors.businessName}</p>}
@@ -171,13 +216,13 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Business Type */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Business Constitution
               </label>
               <select
                 value={formData.businessType}
                 onChange={e => setFormData({ ...formData, businessType: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
                 <option value="Sole Proprietorship">Sole Proprietorship</option>
                 <option value="Partnership Firm">Partnership Firm</option>
@@ -189,16 +234,16 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
 
             {/* City */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 City / Town <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={formData.city}
                 onChange={e => setFormData({ ...formData, city: e.target.value })}
-                placeholder="e.g. Jaipur, Ahmedabad, Mumbai, etc."
-                className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                  errors.city ? 'border-red-400 bg-red-50/20' : 'border-slate-300'
+                placeholder="e.g. Jaipur, Ahmedabad, Mumbai"
+                className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-slate-800 dark:text-white ${
+                  errors.city ? 'border-red-400 bg-red-50/20' : 'border-slate-300 dark:border-slate-700'
                 }`}
               />
               {errors.city && <p className="text-xs text-red-500 mt-1">{errors.city}</p>}
@@ -208,13 +253,13 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* GST Registration Required? */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 GST Registration Required?
               </label>
               <select
                 value={formData.gstRegistrationRequired}
                 onChange={e => setFormData({ ...formData, gstRegistrationRequired: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
                 <option value="Yes - New Registration">Yes - Need New GST Registration</option>
                 <option value="No - Already Have GST">No - Already Registered, Need Return Help</option>
@@ -224,8 +269,8 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
 
             {/* Existing GST Number */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Existing GSTIN (If already registered)
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Existing GSTIN (If registered)
               </label>
               <input
                 type="text"
@@ -233,8 +278,8 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
                 value={formData.existingGstNumber}
                 onChange={e => setFormData({ ...formData, existingGstNumber: e.target.value.toUpperCase() })}
                 placeholder="08AAAAA0000A1Z5"
-                className={`w-full px-3.5 py-2.5 rounded-lg border text-sm uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                  errors.existingGstNumber ? 'border-red-400 bg-red-50/20' : 'border-slate-300'
+                className={`w-full px-3.5 py-2.5 rounded-xl border text-sm uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-slate-800 dark:text-white ${
+                  errors.existingGstNumber ? 'border-red-400 bg-red-50/20' : 'border-slate-300 dark:border-slate-700'
                 }`}
               />
               {errors.existingGstNumber && <p className="text-xs text-red-500 mt-1">{errors.existingGstNumber}</p>}
@@ -243,13 +288,13 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
 
           {/* Primary Requirement */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Primary GST Requirement
             </label>
             <select
               value={formData.requirement}
               onChange={e => setFormData({ ...formData, requirement: e.target.value })}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
               <option value="Monthly Return Filing (GSTR 1 & 3B)">Monthly Return Filing (GSTR-1 &amp; GSTR-3B)</option>
               <option value="Quarterly QRMP Return Filing">Quarterly QRMP Return Filing</option>
@@ -263,15 +308,15 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
 
           {/* Message */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Message / Business Details
             </label>
             <textarea
               rows={2}
               value={formData.message}
               onChange={e => setFormData({ ...formData, message: e.target.value })}
-              placeholder="Provide any details regarding monthly turnover, business category (goods/services)..."
-              className="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+              placeholder="Provide any details regarding monthly turnover, goods or services..."
+              className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
 
@@ -282,9 +327,9 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
                 type="checkbox"
                 checked={formData.consent}
                 onChange={e => setFormData({ ...formData, consent: e.target.checked })}
-                className="mt-0.5 rounded text-amber-500 focus:ring-amber-400 h-4 w-4 border-slate-300"
+                className="mt-0.5 rounded text-amber-500 focus:ring-amber-400 h-4 w-4 border-slate-300 dark:border-slate-700 dark:bg-slate-800"
               />
-              <span className="text-xs text-slate-600 leading-normal select-none">
+              <span className="text-xs text-slate-600 dark:text-slate-400 leading-normal select-none">
                 I agree to be contacted by Manage With Bhairav regarding my GST requirements.
               </span>
             </label>
@@ -292,20 +337,20 @@ export const GstModal: React.FC<GstModalProps> = ({ isOpen, onClose, onSubmitSuc
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors"
+              className="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#0B1B36] hover:bg-brand-navy-800 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#0B1B36] dark:bg-amber-500 dark:text-slate-950 hover:bg-brand-navy-800 dark:hover:bg-amber-400 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50"
             >
-              <Send className="w-3.5 h-3.5 text-amber-400" />
+              <Send className="w-3.5 h-3.5 text-amber-400 dark:text-slate-950" />
               <span>{isSubmitting ? 'Sending Request...' : 'Send GST Request'}</span>
             </button>
           </div>

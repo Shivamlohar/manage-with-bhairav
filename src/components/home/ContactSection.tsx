@@ -12,6 +12,7 @@ import {
   Building 
 } from 'lucide-react';
 import { isValidIndianMobile, isValidEmail } from '../../utils/validation';
+import { sanitizeText, checkRateLimit } from '../../utils/security';
 
 interface ContactSectionProps {
   onSubmitSuccess: (summary: { name: string; phone: string; service: string; refId: string; details: any }) => void;
@@ -27,16 +28,33 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onSubmitSuccess 
     consent: false,
   });
 
+  const [botHoneypot, setBotHoneypot] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Anti-bot honeypot check
+    if (botHoneypot) return;
+
+    // Anti-flooding / rate-limiting defense
+    const rateCheck = checkRateLimit('contact_submit', 4, 60);
+    if (!rateCheck.allowed) {
+      setErrors({ form: `Rate limit reached: Please wait ${rateCheck.waitSeconds}s before submitting again.` });
+      return;
+    }
+
     const newErrors: Record<string, string> = {};
 
-    if (!form.name.trim()) newErrors.name = 'Please enter your name';
-    if (!isValidIndianMobile(form.phone)) newErrors.phone = 'Please enter a valid 10-digit mobile number';
-    if (form.email && !isValidEmail(form.email)) newErrors.email = 'Please enter a valid email address';
+    const cleanName = sanitizeText(form.name);
+    const cleanPhone = form.phone.replace(/\D/g, '');
+    const cleanEmail = sanitizeText(form.email);
+    const cleanMessage = sanitizeText(form.message);
+
+    if (!cleanName) newErrors.name = 'Please enter your name';
+    if (!isValidIndianMobile(cleanPhone)) newErrors.phone = 'Please enter a valid 10-digit mobile number';
+    if (cleanEmail && !isValidEmail(cleanEmail)) newErrors.email = 'Please enter a valid email address';
     if (!form.consent) newErrors.consent = 'Please confirm consent to be contacted';
 
     if (Object.keys(newErrors).length > 0) {
@@ -50,11 +68,17 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onSubmitSuccess 
       setIsSubmitting(false);
       const refId = 'CNT-' + Math.floor(100000 + Math.random() * 900000);
       onSubmitSuccess({
-        name: form.name,
-        phone: form.phone,
+        name: cleanName,
+        phone: cleanPhone,
         service: form.service,
         refId,
-        details: form,
+        details: {
+          name: cleanName,
+          phone: cleanPhone,
+          email: cleanEmail,
+          service: form.service,
+          message: cleanMessage,
+        },
       });
       setForm({
         name: '',
@@ -216,6 +240,24 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onSubmitSuccess 
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4 text-left">
+              {/* Anti-Bot Honeypot */}
+              <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                <input
+                  type="text"
+                  name="contact_hp_verify"
+                  value={botHoneypot}
+                  onChange={e => setBotHoneypot(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
+
+              {/* Form level error */}
+              {errors.form && (
+                <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-xs text-red-600 dark:text-red-400 font-medium">
+                  {errors.form}
+                </div>
+              )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
