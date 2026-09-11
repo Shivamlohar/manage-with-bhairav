@@ -6,12 +6,15 @@
   html {
     scroll-behavior: smooth;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
   }
   
   body {
     background-color: #f8fafc;
     color: #0f172a;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
@@ -65,22 +68,24 @@
   }
 }
 
-/* Custom subtle animations */
-@keyframes floatBadge {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+/* Custom subtle animations (Desktop only to guarantee 120Hz/60Hz smooth mobile scrolling) */
+@media (min-width: 768px) {
+  @keyframes floatBadge {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-8px) rotate(0.5deg);
+    }
   }
-  50% {
-    transform: translateY(-8px) rotate(0.5deg);
+
+  .animate-float-badge {
+    animation: floatBadge 5s ease-in-out infinite;
   }
-}
 
-.animate-float-badge {
-  animation: floatBadge 5s ease-in-out infinite;
-}
-
-.animate-float-badge-delayed {
-  animation: floatBadge 6s ease-in-out infinite 2s;
+  .animate-float-badge-delayed {
+    animation: floatBadge 6s ease-in-out infinite 2s;
+  }
 }
 
 /* Shimmer gradient effect */
@@ -155,27 +160,42 @@
   animation: liquidBlob3 20s ease-in-out infinite 3s;
 }
 
-/* Liquid Glass Cards */
+/* Liquid Glass Cards - Ultra-fast & battery friendly on mobile, rich on desktop */
 .liquid-glass {
-  background: radial-gradient(130% 100% at 50% 0%, rgba(255, 255, 255, 0.92) 0%, rgba(248, 250, 252, 0.85) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: #ffffff;
   border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 12px 32px -8px rgba(11, 27, 54, 0.08), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
-  border-radius: 24px;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px -4px rgba(11, 27, 54, 0.05);
+  border-radius: 20px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .dark .liquid-glass {
-  background: radial-gradient(130% 100% at 50% 0%, rgba(255, 255, 255, 0.08) 0%, rgba(11, 27, 54, 0.45) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6), inset 0 1px 2px 0 rgba(255, 255, 255, 0.25);
+  background: #0B1B36;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.5);
 }
 
-.liquid-glass:hover {
-  transform: translateY(-4px);
-  border-color: rgba(245, 158, 11, 0.5);
-  box-shadow: 0 20px 45px -10px rgba(245, 158, 11, 0.2), inset 0 1px 2px 0 rgba(255, 255, 255, 0.5);
+@media (min-width: 768px) {
+  .liquid-glass {
+    background: radial-gradient(130% 100% at 50% 0%, rgba(255, 255, 255, 0.92) 0%, rgba(248, 250, 252, 0.85) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 24px;
+    box-shadow: 0 12px 32px -8px rgba(11, 27, 54, 0.08), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .dark .liquid-glass {
+    background: radial-gradient(130% 100% at 50% 0%, rgba(255, 255, 255, 0.08) 0%, rgba(11, 27, 54, 0.45) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6), inset 0 1px 2px 0 rgba(255, 255, 255, 0.25);
+  }
+
+  .liquid-glass:hover {
+    transform: translateY(-4px);
+    border-color: rgba(245, 158, 11, 0.5);
+    box-shadow: 0 20px 45px -10px rgba(245, 158, 11, 0.2), inset 0 1px 2px 0 rgba(255, 255, 255, 0.5);
+  }
 }
 
 /* Liquid Pill Capsules */

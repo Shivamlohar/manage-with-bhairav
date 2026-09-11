@@ -18,9 +18,10 @@ export const LiquidCursor: React.FC = () => {
   const animFrameId = useRef<number | null>(null);
 
   useEffect(() => {
-    // Disable on touch screens (only enable for mouse/laptop trackpad)
-    const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-    if (isTouch) return;
+    // Strictly disable on mobile and tablets (< 1024px or touch-only) to eliminate CPU/GPU overhead
+    if (typeof window === 'undefined') return;
+    const isMobileOrTouch = window.innerWidth < 1024 || window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    if (isMobileOrTouch) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       mouse.current.x = e.clientX;
