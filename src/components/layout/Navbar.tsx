@@ -39,8 +39,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenPortal, onOpenAdmin, onOpe
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
-          ? 'bg-white/95 dark:bg-[#071124]/95 backdrop-blur-md shadow-md py-2.5 border-b border-slate-200/80 dark:border-slate-800' 
-          : 'bg-white/80 dark:bg-[#071124]/80 backdrop-blur-sm py-4 border-b border-slate-200/50 dark:border-slate-800/60'
+          ? 'bg-white/80 dark:bg-[#071124]/85 backdrop-blur-xl shadow-lg py-2.5 border-b border-slate-200/60 dark:border-white/10' 
+          : 'bg-white/60 dark:bg-[#071124]/70 backdrop-blur-md py-4 border-b border-slate-200/40 dark:border-white/5'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -105,9 +105,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenPortal, onOpenAdmin, onOpe
               href={getWhatsAppUrl(brandConfig.whatsappMessages.general)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-700 hover:to-amber-700 shadow-sm hover:shadow-gold-glow transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+              className="liquid-pill inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-slate-950 shadow-md"
             >
-              <MessageSquare className="w-4 h-4 fill-white/20" />
+              <MessageSquare className="w-4 h-4 fill-slate-950/20 text-slate-950" />
               <span>WhatsApp Us</span>
             </a>
           </div>

@@ -48,19 +48,19 @@ export const Hero: React.FC<HeroProps> = ({ onStartRequest }) => {
               <button
                 type="button"
                 onClick={onStartRequest}
-                className="inline-flex items-center justify-center gap-3 px-7 py-3.5 rounded-xl font-bold text-base text-white bg-[#0B1B36] dark:bg-amber-500 dark:text-slate-950 hover:bg-brand-navy-800 dark:hover:bg-amber-400 shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 group"
+                className="liquid-pill inline-flex items-center justify-center gap-3 px-8 py-4 font-black text-base text-slate-950 shadow-xl group"
               >
                 <span>Start Your Request</span>
-                <ArrowRight className="w-4 h-4 text-amber-400 dark:text-slate-950 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 text-slate-950 group-hover:translate-x-1.5 transition-transform" />
               </button>
 
               <a
                 href={getWhatsAppUrl(brandConfig.whatsappMessages.general)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-bold text-base text-white bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-700 hover:to-amber-700 shadow-sm hover:shadow-gold-glow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full font-bold text-base text-slate-900 dark:text-white bg-white/70 dark:bg-white/10 backdrop-blur-xl border border-slate-300 dark:border-white/20 hover:bg-white dark:hover:bg-white/20 shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
               >
-                <MessageSquare className="w-5 h-5 fill-white/20" />
+                <MessageSquare className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 <span>WhatsApp Us</span>
               </a>
             </div>

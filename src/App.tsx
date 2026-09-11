@@ -11,6 +11,8 @@ import { FAQSection } from './components/home/FAQSection';
 import { ContactSection } from './components/home/ContactSection';
 import { Footer } from './components/layout/Footer';
 import { WhatsAppFloat } from './components/layout/WhatsAppFloat';
+import { LiquidBackground } from './components/common/LiquidBackground';
+import { LiquidCursor } from './components/common/LiquidCursor';
 
 // Modals
 import { ItrModal } from './components/modals/ItrModal';
@@ -180,8 +182,14 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#060D1B] text-slate-900 dark:text-slate-100 selection:bg-amber-100 selection:text-amber-900 dark:selection:bg-amber-900/60 dark:selection:text-amber-200 transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#060D1B] text-slate-900 dark:text-slate-100 selection:bg-amber-100 selection:text-amber-900 dark:selection:bg-amber-900/60 dark:selection:text-amber-200 transition-colors duration-300 relative">
       
+      {/* Dynamic Liquid Aurora Background Waves */}
+      <LiquidBackground />
+
+      {/* Interactive Liquid Cursor Follower & Ripple Engine */}
+      <LiquidCursor />
+
       {/* 1. Sticky Modern Navbar */}
       <Navbar
         onOpenPortal={() => setPortalModalOpen(true)}
