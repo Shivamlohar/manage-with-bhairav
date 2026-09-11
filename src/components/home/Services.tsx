@@ -116,18 +116,18 @@ export const Services: React.FC<ServicesProps> = ({ onSelectService }) => {
   ];
 
   return (
-    <section id="services" className="py-20 md:py-28 bg-white relative">
+    <section id="services" className="py-20 md:py-28 bg-white dark:bg-[#060D1B] relative transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-50 dark:bg-slate-800 border border-amber-200 dark:border-slate-700 text-amber-800 dark:text-amber-400 text-xs font-semibold uppercase tracking-wider mb-3">
             Core Expertise
           </div>
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0B1B36] tracking-tight mb-4">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0B1B36] dark:text-white tracking-tight mb-4">
             Services That Keep Your Business Moving
           </h2>
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
             From tax filing to everyday accounting support, get professional assistance in one place.
           </p>
         </div>
@@ -141,8 +141,8 @@ export const Services: React.FC<ServicesProps> = ({ onSelectService }) => {
                 key={service.key}
                 className={`rounded-2xl p-7 sm:p-8 transition-all duration-300 flex flex-col justify-between relative group ${
                   service.featured 
-                    ? 'bg-gradient-to-b from-white via-amber-50/20 to-white border-2 border-amber-400 shadow-xl shadow-amber-500/5' 
-                    : 'bg-white border border-slate-200 shadow-sm hover:shadow-xl hover:border-slate-300'
+                    ? 'bg-gradient-to-b from-white via-amber-50/20 to-white dark:from-slate-900 dark:via-amber-500/5 dark:to-slate-900 border-2 border-amber-400 dark:border-amber-500/60 shadow-xl shadow-amber-500/5 dark:shadow-dark-glow' 
+                    : 'bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-slate-300 dark:hover:border-slate-700'
                 }`}
               >
                 {service.featured && (
@@ -154,26 +154,26 @@ export const Services: React.FC<ServicesProps> = ({ onSelectService }) => {
                 <div>
                   {/* Top Bar: Icon + Badge */}
                   <div className="flex items-center justify-between mb-6">
-                    <div className="w-13 h-13 p-3.5 rounded-xl bg-brand-navy-50 text-[#0B1B36] group-hover:bg-amber-500 group-hover:text-white transition-colors duration-200">
+                    <div className="w-13 h-13 p-3.5 rounded-xl bg-brand-navy-50 dark:bg-slate-800 text-[#0B1B36] dark:text-amber-400 group-hover:bg-amber-500 group-hover:text-white dark:group-hover:bg-amber-500 dark:group-hover:text-slate-950 transition-colors duration-200">
                       <Icon className="w-7 h-7" />
                     </div>
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 text-slate-700">
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                       {service.badge}
                     </span>
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="font-display text-xl font-bold text-[#0B1B36] mb-3 group-hover:text-brand-navy-800 transition-colors">
+                  <h3 className="font-display text-xl font-bold text-[#0B1B36] dark:text-white mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                     {service.title}
                   </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed mb-6">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
                     {service.text}
                   </p>
 
                   {/* Feature Checkpoints */}
-                  <ul className="space-y-2 mb-8 border-t border-slate-100 pt-4">
+                  <ul className="space-y-2 mb-8 border-t border-slate-100 dark:border-slate-800 pt-4">
                     {service.features.map((feat, idx) => (
-                      <li key={idx} className="text-xs text-slate-600 flex items-center gap-2">
+                      <li key={idx} className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0" />
                         <span>{feat}</span>
                       </li>
@@ -189,7 +189,7 @@ export const Services: React.FC<ServicesProps> = ({ onSelectService }) => {
                     className={`w-full py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 ${
                       service.featured
                         ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-md hover:shadow-gold-glow'
-                        : 'bg-[#0B1B36] hover:bg-brand-navy-800 text-white'
+                        : 'bg-[#0B1B36] dark:bg-slate-800 hover:bg-brand-navy-800 dark:hover:bg-slate-700 text-white'
                     }`}
                   >
                     <span>{service.buttonText}</span>
@@ -200,9 +200,9 @@ export const Services: React.FC<ServicesProps> = ({ onSelectService }) => {
                     href={getWhatsAppUrl(service.whatsappMessage)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-2 px-3 rounded-lg text-xs font-medium text-slate-600 hover:text-amber-700 bg-slate-50 hover:bg-amber-50 border border-slate-200/80 flex items-center justify-center gap-1.5 transition-colors"
+                    className="w-full py-2 px-3 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-50 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 flex items-center justify-center gap-1.5 transition-colors"
                   >
-                    <MessageSquare className="w-3.5 h-3.5 text-amber-600" />
+                    <MessageSquare className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                     <span>Quick WhatsApp Enquiry</span>
                   </a>
                 </div>

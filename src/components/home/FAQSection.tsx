@@ -41,18 +41,18 @@ export const FAQSection: React.FC = () => {
   };
 
   return (
-    <section id="faqs" className="py-20 md:py-28 bg-white relative">
+    <section id="faqs" className="py-20 md:py-28 bg-white dark:bg-[#060D1B] relative transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-50 dark:bg-slate-800 border border-amber-200 dark:border-slate-700 text-amber-800 dark:text-amber-400 text-xs font-semibold uppercase tracking-wider mb-3">
             Common Inquiries
           </div>
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0B1B36] tracking-tight mb-4">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0B1B36] dark:text-white tracking-tight mb-4">
             Frequently Asked Questions
           </h2>
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
             Clear answers to common questions about ITR filing, GST compliances, and accounting support.
           </p>
         </div>
@@ -64,10 +64,10 @@ export const FAQSection: React.FC = () => {
             return (
               <div
                 key={index}
-                className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
                   isOpen
-                    ? 'border-amber-400/80 bg-amber-50/10 shadow-md'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
+                    ? 'border-amber-400 dark:border-amber-500/70 bg-amber-50/20 dark:bg-slate-900 shadow-md'
+                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:border-slate-300 dark:hover:border-slate-700'
                 }`}
               >
                 <button
@@ -76,17 +76,17 @@ export const FAQSection: React.FC = () => {
                   className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                   aria-expanded={isOpen}
                 >
-                  <span className="font-display font-bold text-base sm:text-lg text-[#0B1B36] flex items-center gap-3">
-                    <HelpCircle className={`w-5 h-5 flex-shrink-0 transition-colors ${isOpen ? 'text-amber-600' : 'text-slate-400'}`} />
+                  <span className="font-display font-bold text-base sm:text-lg text-[#0B1B36] dark:text-white flex items-center gap-3">
+                    <HelpCircle className={`w-5 h-5 flex-shrink-0 transition-colors ${isOpen ? 'text-amber-600 dark:text-amber-400' : 'text-slate-400 dark:text-slate-500'}`} />
                     <span>{faq.q}</span>
                   </span>
-                  <div className={`p-1.5 rounded-full bg-slate-100 text-slate-700 transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180 bg-amber-100 text-amber-800' : ''}`}>
+                  <div className={`p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition-transform duration-300 flex-shrink-0 ${isOpen ? 'rotate-180 bg-amber-100 dark:bg-amber-500 text-amber-800 dark:text-slate-950' : ''}`}>
                     <ChevronDown className="w-4 h-4" />
                   </div>
                 </button>
 
                 {isOpen && (
-                  <div className="px-6 pb-6 pt-1 text-sm sm:text-base text-slate-600 leading-relaxed border-t border-slate-100">
+                  <div className="px-6 pb-6 pt-1 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800/80">
                     <p className="pl-8">{faq.a}</p>
                   </div>
                 )}
@@ -96,12 +96,12 @@ export const FAQSection: React.FC = () => {
         </div>
 
         {/* Still Have Questions CTA */}
-        <div className="mt-12 text-center p-6 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-12 text-center p-6 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-left">
-            <h4 className="font-display font-bold text-base text-[#0B1B36]">
+            <h4 className="font-display font-bold text-base text-[#0B1B36] dark:text-white">
               Have a specific taxation question not covered here?
             </h4>
-            <p className="text-xs sm:text-sm text-slate-600">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               Speak with Manage With Bhairav directly on WhatsApp for tailored clarification.
             </p>
           </div>

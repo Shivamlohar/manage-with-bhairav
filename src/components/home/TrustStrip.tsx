@@ -33,7 +33,7 @@ export const TrustStrip: React.FC = () => {
   return (
     <section className="relative z-20 -mt-6 sm:-mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Brand Sub-header strip */}
-      <div className="bg-[#0B1B36] rounded-2xl shadow-xl p-6 sm:p-8 text-white border border-brand-navy-700">
+      <div className="bg-[#0B1B36] dark:bg-[#071124] rounded-2xl shadow-xl p-6 sm:p-8 text-white border border-brand-navy-700 dark:border-slate-800 transition-colors duration-300">
         <div className="text-center mb-6">
           <p className="text-xs sm:text-sm font-semibold tracking-widest text-amber-400 uppercase">
             {brandConfig.tagline}
@@ -50,14 +50,14 @@ export const TrustStrip: React.FC = () => {
             return (
               <div
                 key={card.num}
-                className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-5 transition-all duration-300 hover:-translate-y-1 hover:border-amber-400/40 group flex flex-col justify-between"
+                className="bg-white/5 hover:bg-white/10 dark:bg-slate-900/60 dark:hover:bg-slate-900/90 border border-white/10 dark:border-slate-800 rounded-xl p-5 transition-all duration-300 hover:-translate-y-1 hover:border-amber-400/40 group flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="font-display text-2xl font-extrabold text-amber-400/90 group-hover:text-amber-300">
+                    <span className="font-display text-2xl font-extrabold text-amber-400 group-hover:text-amber-300">
                       {card.num}
                     </span>
-                    <div className="p-2 rounded-lg bg-white/10 text-amber-300 group-hover:bg-amber-400/20 transition-colors">
+                    <div className="p-2 rounded-lg bg-white/10 dark:bg-slate-800 text-amber-300 group-hover:bg-amber-400/20 transition-colors">
                       <Icon className="w-5 h-5" />
                     </div>
                   </div>

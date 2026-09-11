@@ -180,7 +180,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 selection:bg-amber-100 selection:text-amber-900">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#060D1B] text-slate-900 dark:text-slate-100 selection:bg-amber-100 selection:text-amber-900 dark:selection:bg-amber-900/60 dark:selection:text-amber-200 transition-colors duration-300">
       
       {/* 1. Sticky Modern Navbar */}
       <Navbar

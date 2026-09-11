@@ -81,7 +81,6 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
 
     setIsSubmitting(true);
 
-    // Simulate reliable submission and trigger success dialog
     setTimeout(() => {
       setIsSubmitting(false);
       const refId = 'ITR-' + Math.floor(100000 + Math.random() * 900000);
@@ -97,11 +96,11 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full border border-slate-200 overflow-hidden my-8 transform transition-all">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full border border-slate-200 dark:border-slate-800 overflow-hidden my-8 transform transition-all text-left">
         
         {/* Modal Header */}
-        <div className="bg-[#0B1B36] text-white px-6 py-5 flex items-center justify-between border-b border-brand-navy-700">
+        <div className="bg-[#0B1B36] dark:bg-[#071124] text-white px-6 py-5 flex items-center justify-between border-b border-brand-navy-700 dark:border-slate-800">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Enquiry Form</span>
             <h3 className="font-display text-xl font-bold text-white mt-0.5">
@@ -118,18 +117,18 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
         </div>
 
         {/* Security Alert Banner */}
-        <div className="bg-amber-50 border-b border-amber-200/80 px-6 py-2.5 flex items-center gap-2.5 text-xs text-amber-900 font-medium">
-          <ShieldAlert className="w-4 h-4 text-amber-600 flex-shrink-0" />
+        <div className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200/80 dark:border-amber-800/60 px-6 py-2.5 flex items-center gap-2.5 text-xs text-amber-900 dark:text-amber-200 font-medium">
+          <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
           <span>Security Notice: Never upload or share passwords, OTPs, ATM PINs, or confidential banking credentials.</span>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-left">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Full Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Full Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -137,8 +136,8 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
                 value={formData.fullName}
                 onChange={e => setFormData({ ...formData, fullName: e.target.value })}
                 placeholder="e.g. Ramesh Sharma"
-                className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors ${
-                  errors.fullName ? 'border-red-400 bg-red-50/20' : 'border-slate-300'
+                className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-slate-800 dark:text-white transition-colors ${
+                  errors.fullName ? 'border-red-400 bg-red-50/20' : 'border-slate-300 dark:border-slate-700'
                 }`}
               />
               {errors.fullName && <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>}
@@ -146,19 +145,19 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
 
             {/* Mobile Number */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Mobile Number (10 Digits) <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-2.5 text-xs font-bold text-slate-500">+91</span>
+                <span className="absolute left-3 top-2.5 text-xs font-bold text-slate-500 dark:text-slate-400">+91</span>
                 <input
                   type="tel"
                   maxLength={10}
                   value={formData.mobile}
                   onChange={e => setFormData({ ...formData, mobile: e.target.value.replace(/\D/g, '') })}
                   placeholder="9876543210"
-                  className={`w-full pl-12 pr-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors ${
-                    errors.mobile ? 'border-red-400 bg-red-50/20' : 'border-slate-300'
+                  className={`w-full pl-12 pr-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-slate-800 dark:text-white transition-colors ${
+                    errors.mobile ? 'border-red-400 bg-red-50/20' : 'border-slate-300 dark:border-slate-700'
                   }`}
                 />
               </div>
@@ -169,7 +168,7 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Email */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Email Address (Optional)
               </label>
               <input
@@ -177,17 +176,15 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
                 value={formData.email}
                 onChange={e => setFormData({ ...formData, email: e.target.value })}
                 placeholder="name@example.com"
-                className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors ${
-                  errors.email ? 'border-red-400' : 'border-slate-300'
-                }`}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
               {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
             </div>
 
             {/* PAN Number */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                PAN Number (Optional / For Records)
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                PAN Number (Optional)
               </label>
               <input
                 type="text"
@@ -195,8 +192,8 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
                 value={formData.panNumber}
                 onChange={e => setFormData({ ...formData, panNumber: e.target.value.toUpperCase() })}
                 placeholder="ABCDE1234F"
-                className={`w-full px-3.5 py-2.5 rounded-lg border text-sm uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors ${
-                  errors.panNumber ? 'border-red-400 bg-red-50/20' : 'border-slate-300'
+                className={`w-full px-3.5 py-2.5 rounded-xl border text-sm uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-slate-800 dark:text-white transition-colors ${
+                  errors.panNumber ? 'border-red-400 bg-red-50/20' : 'border-slate-300 dark:border-slate-700'
                 }`}
               />
               {errors.panNumber && <p className="text-xs text-red-500 mt-1">{errors.panNumber}</p>}
@@ -206,13 +203,13 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Assessment Year */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Assessment Year
               </label>
               <select
                 value={formData.assessmentYear}
                 onChange={e => setFormData({ ...formData, assessmentYear: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
                 <option value="AY 2025-26">AY 2025-26 (FY 2024-25)</option>
                 <option value="AY 2024-25">AY 2024-25 (FY 2023-24)</option>
@@ -223,13 +220,13 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
 
             {/* Employment Type */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Employment Type
               </label>
               <select
                 value={formData.employmentType}
                 onChange={e => setFormData({ ...formData, employmentType: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
                 <option value="Salaried">Salaried (Form 16)</option>
                 <option value="Self-Employed / Business">Self-Employed / Business</option>
@@ -241,13 +238,13 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
 
             {/* Previous ITR Filed */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Previous ITR Filed?
               </label>
               <select
                 value={formData.previousItrFiled}
                 onChange={e => setFormData({ ...formData, previousItrFiled: e.target.value as 'Yes' | 'No' })}
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
                 <option value="Yes">Yes, previously filed</option>
                 <option value="No">No, first time filing</option>
@@ -257,11 +254,11 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
 
           {/* Income Sources Multi-select */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-2">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
               Income Type(s) (Select all that apply)
             </label>
             <div className="flex flex-wrap gap-2">
-              {['Salary', 'Business/Profession', 'Rental Income', 'Capital Gains (Shares/Property)', 'Bank Interest/FDs', 'Other'].map(type => {
+              {['Salary', 'Business/Profession', 'Rental Income', 'Capital Gains', 'Bank Interest/FDs', 'Other'].map(type => {
                 const isSelected = formData.incomeType.includes(type);
                 return (
                   <button
@@ -270,8 +267,8 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
                     onClick={() => handleIncomeTypeToggle(type)}
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors border ${
                       isSelected
-                        ? 'bg-amber-500 text-white border-amber-600'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        ? 'bg-amber-500 text-white dark:text-slate-950 border-amber-600'
+                        : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
                     }`}
                   >
                     {isSelected ? '✓ ' : '+ '}{type}
@@ -281,12 +278,12 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
             </div>
           </div>
 
-          {/* Document Upload (Optional) */}
+          {/* Document Upload */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Attach Document / Form 16 (Optional - PDF, JPG, PNG under 10MB)
             </label>
-            <div className="border border-dashed border-slate-300 rounded-lg p-3 bg-slate-50 text-center hover:bg-slate-100 transition-colors">
+            <div className="border border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-3 bg-slate-50 dark:bg-slate-800/50 text-center hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
               <input
                 type="file"
                 id="itr-file-upload"
@@ -294,10 +291,10 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
                 accept=".pdf,.jpg,.jpeg,.png"
                 className="hidden"
               />
-              <label htmlFor="itr-file-upload" className="cursor-pointer flex items-center justify-center gap-2 text-xs font-semibold text-brand-navy-800">
-                <UploadCloud className="w-4 h-4 text-amber-600" />
+              <label htmlFor="itr-file-upload" className="cursor-pointer flex items-center justify-center gap-2 text-xs font-semibold text-brand-navy-800 dark:text-amber-400">
+                <UploadCloud className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                 {selectedFile ? (
-                  <span className="text-emerald-700 font-bold">{selectedFile.name} ({(selectedFile.size / 1024).toFixed(0)} KB)</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 font-bold">{selectedFile.name} ({(selectedFile.size / 1024).toFixed(0)} KB)</span>
                 ) : (
                   <span>Click to browse and attach Form 16 / Tax Summary</span>
                 )}
@@ -308,7 +305,7 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
 
           {/* Message */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Message / Specific Questions (Optional)
             </label>
             <textarea
@@ -316,41 +313,41 @@ export const ItrModal: React.FC<ItrModalProps> = ({ isOpen, onClose, onSubmitSuc
               value={formData.message}
               onChange={e => setFormData({ ...formData, message: e.target.value })}
               placeholder="Provide any additional details or deductions you would like to discuss..."
-              className="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
 
-          {/* Mandatory Statutory Disclaimer & Consent */}
+          {/* Statutory Disclaimer & Consent */}
           <div className="pt-2">
             <label className="flex items-start gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
                 checked={formData.consent}
                 onChange={e => setFormData({ ...formData, consent: e.target.checked })}
-                className="mt-0.5 rounded text-amber-500 focus:ring-amber-400 h-4 w-4 border-slate-300"
+                className="mt-0.5 rounded text-amber-500 focus:ring-amber-400 h-4 w-4 border-slate-300 dark:border-slate-700 dark:bg-slate-800"
               />
-              <span className="text-xs text-slate-600 leading-normal select-none">
-                <strong className="text-slate-800">Important Disclaimer:</strong> I understand that this form is an enquiry/request and does not itself constitute filing of an ITR. Manage With Bhairav will connect with me to verify records before any official filing.
+              <span className="text-xs text-slate-600 dark:text-slate-400 leading-normal select-none">
+                <strong className="text-slate-800 dark:text-slate-200">Important Disclaimer:</strong> I understand that this form is an enquiry/request and does not itself constitute filing of an ITR. Manage With Bhairav will connect with me to verify records before any official filing.
               </span>
             </label>
             {errors.consent && <p className="text-xs text-red-500 mt-1">{errors.consent}</p>}
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors"
+              className="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#0B1B36] hover:bg-brand-navy-800 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#0B1B36] dark:bg-amber-500 dark:text-slate-950 hover:bg-brand-navy-800 dark:hover:bg-amber-400 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50"
             >
-              <Send className="w-3.5 h-3.5 text-amber-400" />
+              <Send className="w-3.5 h-3.5 text-amber-400 dark:text-slate-950" />
               <span>{isSubmitting ? 'Sending Request...' : 'Send ITR Request'}</span>
             </button>
           </div>

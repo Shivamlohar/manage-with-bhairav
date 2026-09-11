@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -44,16 +45,23 @@ export default {
       boxShadow: {
         'premium': '0 20px 40px -15px rgba(11, 27, 54, 0.08)',
         'premium-hover': '0 25px 50px -12px rgba(11, 27, 54, 0.15)',
-        'gold-glow': '0 10px 25px -5px rgba(229, 138, 31, 0.25)',
+        'gold-glow': '0 10px 25px -5px rgba(229, 138, 31, 0.35)',
+        'dark-card': '0 10px 30px -10px rgba(0, 0, 0, 0.5)',
+        'dark-glow': '0 0 25px -5px rgba(245, 158, 11, 0.2)',
       },
       animation: {
         'float-slow': 'float 6s ease-in-out infinite',
         'pulse-subtle': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'shimmer': 'shimmer 2.5s infinite linear',
       },
       keyframes: {
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-10px)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
         }
       }
     },
