@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm install && vite build",
+    "start": "serve -s dist",
     "lint": "oxlint",
     "preview": "vite preview",
     "predeploy": "npm run build",
@@ -23,6 +24,7 @@
     "react-dom": "^19.2.8",
     "tailwindcss": "^3.4.19",
     "typescript": "~6.0.2",
+    "serve": "^14.2.4",
     "vite": "^8.3.0"
   },
   "devDependencies": {
